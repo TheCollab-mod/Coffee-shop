@@ -1,3 +1,13 @@
+import { useEffect, useState } from 'react';
+import { BackHandler, Platform, StatusBar, View } from 'react-native';
+import { Coffee, Mode, Size, coffees } from './src/data/coffees';
+import { Screen, useFlow } from './src/navigation/useFlow';
+import { OnboardingScreen } from './src/screens/OnboardingScreen';
+import { HomeScreen } from './src/screens/HomeScreen';
+import { DetailScreen } from './src/screens/DetailScreen';
+import { OrderScreen } from './src/screens/OrderScreen';
+import { DeliveryScreen } from './src/screens/DeliveryScreen';
+import { C } from './src/theme';
 
 export default function App() {
   const { screen, go, back } = useFlow();
