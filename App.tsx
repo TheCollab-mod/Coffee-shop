@@ -1,20 +1,33 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
+  const { screen, go, back } = useFlow();
+  const [item, setItem] = useState<Coffee>(coffees[0]);
+  const [size, setSize] = useState<Size>('M');
+  const [qty, setQty] = useState(1);
+  const [mode, setMode] = useState<Mode>('Deliver');
+
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', back);
+    return () => sub.remove();
+  }, [back]);
+
+  const pick = (c: Coffee, to: Screen) => { setItem(c); setSize('M'); setQty(1); go(to); };
+  const dark = screen === 'onboarding' || screen === 'home';
+  const top = Platform.OS === 'android' ? StatusBar.currentHeight ?? 0 : 44;
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View style={{ flex: 1, paddingTop: top, backgroundColor: dark ? C.dark : '#fff' }}>
+      <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
+      {screen === 'onboarding' && <OnboardingScreen onStart={() => go('home')} />}
+      {screen === 'home' && <HomeScreen onOpen={(c) => pick(c, 'detail')} onAdd={(c) => pick(c, 'order')} />}
+      {screen === 'detail' && (
+        <DetailScreen item={item} size={size} onSize={setSize} onBack={back} onBuy={() => go('order')} />
+      )}
+      {screen === 'order' && (
+        <OrderScreen item={item} size={size} qty={qty} onQty={setQty} mode={mode} onMode={setMode}
+          onBack={back} onOrder={() => go('delivery')} />
+      )}
+      {screen === 'delivery' && <DeliveryScreen onBack={back} />}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
